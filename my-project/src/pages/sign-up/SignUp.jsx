@@ -1,6 +1,7 @@
 import { Button, Input } from "antd";
+import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Signup = () => {
   const {
@@ -15,26 +16,56 @@ const Signup = () => {
     },
   });
 
+  const [userExistsError, setUserExistsError] = useState("");
   const navigate = useNavigate();
 
   const base64Encode = (data) => {
     return btoa(JSON.stringify(data));
   };
 
+  const base64Decode = (data) => {
+    return JSON.parse(atob(data));
+  };
+
   const onSubmit = (e) => {
+    const userData = {
+      username: e.username,
+      email: e.email,
+      password: e.password,
+    };
+
     try {
-      const userData = {
-        username: e.username,
-        email: e.email,
-        password: e.password,
-      };
+      const userExists = localStorage.getItem("userData");
+      let usersArray = [];
 
-      localStorage.setItem("userData",base64Encode(JSON.stringify([userData])));
+      if (userExists) {
+        try {
+          usersArray = base64Decode(userExists) || [];
+        } catch (error) {
+          console.error("Error decoding user data:", error);
+        }
+      }
 
+      const userAlreadyExists = usersArray.some(
+        (user) =>
+          user.username === userData.username &&
+          user.email === userData.email &&
+          user.password === userData.password
+      );
+
+      if (userAlreadyExists) {
+        setUserExistsError("User already Exist. Please Login.");
+        return;
+      }
+
+      usersArray.push(userData);
+      localStorage.setItem("userData", base64Encode(usersArray));
+
+      setUserExistsError("");
       navigate("/Login");
-
     } catch (error) {
       console.error("Signup Error:", error);
+      setUserExistsError("An error occurred during signup. Please try again.");
     }
   };
 
@@ -52,7 +83,7 @@ const Signup = () => {
           <div className="w-[350px] md:w-[450px] h-[140px] md:h-[180px] mb-6">
             <img src="src/assets/ShipcomLogo.png" alt="brand-logo" />
           </div>
-          <form className="flex flex-col justify-center items-center w-full max-w-[320px] space-y-9">
+          <form className="flex flex-col justify-center items-center w-full max-w-[320px] space-y-7">
             <>
               <Controller
                 control={control}
@@ -150,6 +181,15 @@ const Signup = () => {
                 )}
               />
             </>
+
+            {userExistsError && (
+              <p className="text-red-600 text-sm">
+                User already Exist. Please{" "}
+                <Link to="/Login" className="underline">
+                  Login.
+                </Link>
+              </p>
+            )}
             <Button
               onClick={handleSubmit(onSubmit)}
               className="bg-violet-600 hover:!bg-violet-500  hover:!text-white focus:!ring focus:!ring-violet-300 focus:!outline-none border-0  text-white w-full mt-8"

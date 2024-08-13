@@ -4,11 +4,17 @@ import { useForm, Controller } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [lsData, setLSdata] = useState(null);
+  const [lsData, setLSdata] = useState([]);
+  const [passwordState, setPasswordState] = useState("");
+  const [emailState, setEmailState] = useState("");
+  const [targetObject, setTargetObject] = useState({});
+  console.log("targetObject", targetObject);
   const {
     control,
     handleSubmit,
     formState: { errors },
+    watch,
+    getValues,
   } = useForm({
     defaultValues: {
       email: "",
@@ -24,12 +30,19 @@ const Login = () => {
 
   const onSubmit = (e) => {
     try {
-      if (e.email === lsData.email && e.password === lsData.password) {
+      const user = lsData.find(
+        (user) => user.email === e.email && user.password === e.password
+      );
+
+      if (user) {
         console.log("Logged In Successfully!");
         localStorage.setItem("isLoggedIn", true);
         navigate("/Userlisting");
       } else {
-        console.log("Incorrect email or password!");
+        const emailExists = lsData.some((user) => user.email === e.email);
+
+        console.log("emailExists", emailExists);
+        console.log("Incorrect credentials!");
       }
     } catch (error) {
       console.error("Error during sign-in:", error);
@@ -39,15 +52,16 @@ const Login = () => {
   useEffect(() => {
     try {
       const localStorageData = localStorage.getItem("userData");
-
-      if (localStorageData) {
-        setLSdata(JSON.parse(base64Decode(localStorageData)));
-      }
+      const localStorageDataArray = localStorageData
+        ? base64Decode(localStorageData)
+        : [];
+      setLSdata(localStorageDataArray);
     } catch (error) {
       console.error("Error accessing local storage:", error);
     }
   }, []);
 
+  console.log("getValues(password)", getValues("password"));
   return (
     <>
       <section className="h-screen w-full flex flex-col md:flex-row">
@@ -78,7 +92,16 @@ const Login = () => {
               render={({ field: { onChange, value } }) => (
                 <div className="relative w-full flex flex-col">
                   <Input
-                    onChange={onChange}
+                    onChange={(e) => {
+                      onChange(e);
+                      setEmailState(e?.target?.value);
+
+                      const singleObject = lsData.find((i) => {
+                        return i.email === e.target.value;
+                      });
+
+                      setTargetObject(singleObject);
+                    }}
                     className={`w-full border-gray-400 transition-all ${
                       errors?.email?.message
                         ? "!border-red-500 hover:!border-red-500"
@@ -110,7 +133,10 @@ const Login = () => {
               render={({ field: { onChange, value } }) => (
                 <div className="relative w-full flex flex-col">
                   <Input.Password
-                    onChange={onChange}
+                    onChange={(e) => {
+                      onChange(e);
+                      setPasswordState(e?.target?.value);
+                    }}
                     className={`w-full border-gray-400 transition-all ${
                       errors?.password?.message
                         ? "!border-red-500 hover:!border-red-500"
@@ -125,12 +151,22 @@ const Login = () => {
                   >
                     Password
                   </label>
-
                   {errors.password && (
                     <p className="text-red-600 text-sm mt-1 text-left">
                       {errors.password.message}
                     </p>
                   )}
+
+                  {passwordState !== "" &&
+                  targetObject.password !== passwordState ? (
+                    <p className="text-red-600 text-sm mt-1 text-left">
+                      Password Incorrect!
+                    </p>
+                  ) : (
+                    ""
+                  )}
+
+                  {}
                 </div>
               )}
             />

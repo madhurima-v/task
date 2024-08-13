@@ -32,6 +32,7 @@ const Userlisting = () => {
   const [pageSize, setPageSize] = useState(10);
   const [sortOrder, setSortOrder] = useState(null);
   const [filterVisible, setFilterVisible] = useState(false);
+  const [searchText, setSearchText] = useState("");
 
   const navigate = useNavigate();
 
@@ -39,7 +40,8 @@ const Userlisting = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get("https://dummyjson.com/users");
-        setData(response.data.users.slice(0, 10));
+        const initialData = response.data.users.slice(0, 10);
+        setData(initialData);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -52,7 +54,7 @@ const Userlisting = () => {
 
   const avatarUrls = [
     "https://randomuser.me/api/portraits/women/1.jpg",
-    "https://randomuser.me/api/portraits/men/2.jpg",
+    "https://randomuser.me/api/portraits/men/15.jpg",
     "https://randomuser.me/api/portraits/women/2.jpg",
     "https://randomuser.me/api/portraits/men/4.jpg",
     "https://randomuser.me/api/portraits/women/3.jpg",
@@ -85,6 +87,16 @@ const Userlisting = () => {
     setSortOrder(null);
     setFilterVisible(false);
   };
+
+  const handleSearch = (e) => {
+    const value = e.target.value.toLowerCase();
+    setSearchText(value);
+  };
+
+  const filteredData = data.filter((user) => {
+    const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+    return fullName.includes(searchText);
+  });
 
   const columns = [
     {
@@ -210,7 +222,10 @@ const Userlisting = () => {
             className="!w-full lg:!w-[270px] shadow-md text-gray-500 rounded-3xl mb-4 lg:mb-0 lg:me-4"
             placeholder="Search"
             prefix={<SearchOutlined />}
+            value={searchText}
+            onChange={handleSearch}
           />
+
           <Dropdown
             overlay={menu}
             trigger={["click"]}
@@ -226,7 +241,7 @@ const Userlisting = () => {
           <Table
             className="custom-table w-full"
             columns={columns}
-            dataSource={data}
+            dataSource={filteredData}
             onRow={(record, rowIndex) => ({
               onClick: () => {
                 setOpen(true);
@@ -242,82 +257,37 @@ const Userlisting = () => {
         </div>
         <p className="text-xs text-gray-400 mt-6">
           Showing {(page - 1) * pageSize + 1}-
-          {Math.min(page * pageSize, data.length)} of {data.length}
+          {Math.min(page * pageSize, filteredData.length)} of{" "}
+          {filteredData.length} Users
         </p>
       </div>
       <Drawer
-        className="rounded h-screen"
+        title="User Details"
         placement="right"
         onClose={() => setOpen(false)}
-        open={open}
-        closeIcon={null}
+        visible={open}
       >
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-gray-400 font-semibold text-lg">User Details</p>
-          <MoreOutlined
-            className="text-gray-400 cursor-pointer hover:text-gray-600"
-            onClick={() => setOpen(false)}
+        <div className="flex flex-col">
+          <Avatar
+            src={getAvatarUrl(drawerIndex)}
+            size={100}
+            className="mb-4 self-center"
           />
+          <p className="font-bold text-lg mb-2">
+            {drawerData.firstName} {drawerData.lastName}
+          </p>
+          <p className="text-sm text-gray-600 mb-4">{drawerData.email}</p>
+          <p className="text-sm text-gray-600 mb-2">
+            <strong>Phone:</strong> {drawerData.phone}
+          </p>
+          <p className="text-sm text-gray-600 mb-2">
+            <strong>Role:</strong> {drawerData.company?.title}
+          </p>
+          <p className="text-sm text-gray-600 mb-2">
+            <strong>Address:</strong>{" "}
+            {`${drawerData.address?.address}, ${drawerData.address?.city}, ${drawerData.address?.postalCode}`}
+          </p>
         </div>
-        {drawerData && (
-          <div>
-            <div className="flex items-center mb-4">
-              <Avatar
-                src={getAvatarUrl(drawerIndex)}
-                shape="circle"
-                size={100}
-                className="mr-4"
-              />
-              <div className="flex flex-col">
-                <p className="text-xl font-semibold mb-1">
-                  {`${drawerData?.firstName} ${drawerData?.lastName}`}
-                </p>
-                <p className="text-sm text-gray-500">
-                  Birthdate: {drawerData?.birthDate}
-                </p>
-              </div>
-            </div>
-            <hr className="my-4 border-gray-300" />
-
-            <div>
-              <div className="flex items-center mb-4">
-                <UserOutlined className="text-xl text-gray-500 mr-2" />
-                <h1 className="text-xl text-gray-500">Account Details</h1>
-              </div>
-              <p className="text-lg text-gray-500 font-semibold">
-                {`${drawerData?.firstName} ${drawerData?.lastName}`}
-              </p>
-              <p className="text-xs text-gray-300">FULL NAME</p>
-              <p className="text-lg text-gray-500 font-semibold">
-                {drawerData?.email}
-              </p>
-              <p className="text-xs text-gray-300">EMAIL</p>
-              <p className="text-lg text-gray-500 font-semibold">
-                {drawerData?.company?.title}
-              </p>
-              <p className="text-xs text-gray-300">COMPANY</p>
-            </div>
-
-            <hr className="my-4 border-gray-300" />
-
-            <div>
-              <div className="flex items-center mb-4">
-                <BarChartOutlined className="text-xl text-gray-500 mr-2" />
-                <h1 className="text-xl text-gray-500">User Data</h1>
-              </div>
-              <p className="text-lg text-gray-500 font-semibold">
-                {drawerData?.address?.address}
-              </p>
-              <p className="text-xs text-gray-300">ADDRESS</p>
-              <p className="text-lg text-gray-500 font-semibold">{`${drawerData?.address?.city} - ${drawerData?.address?.postalCode}`}</p>
-              <p className="text-xs text-gray-300">CITY</p>
-              <p className="text-lg text-gray-500 font-semibold">
-                {drawerData?.address?.country}
-              </p>
-              <p className="text-xs text-gray-300">COUNTRY</p>
-            </div>
-          </div>
-        )}
       </Drawer>
     </section>
   );
