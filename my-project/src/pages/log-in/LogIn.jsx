@@ -6,10 +6,10 @@ import { useNavigate } from "react-router-dom";
 const Login = () => {
   const [lsData, setLSdata] = useState([]);
   const [passwordState, setPasswordState] = useState("");
-  const [emailState, setEmailState] = useState("");
+  // const [emailState, setEmailState] = useState("");
   const [targetObject, setTargetObject] = useState({});
   const [submitClicked, setSubmitClicked] = useState(false);
-  console.log("targetObject", targetObject);
+  // console.log("targetObject", targetObject);
   const {
     control,
     handleSubmit,
@@ -40,9 +40,9 @@ const Login = () => {
         localStorage.setItem("isLoggedIn", true);
         navigate("/Userlisting");
       } else {
-        const emailExists = lsData.some((user) => user.email === e.email);
+        // const emailExists = lsData.some((user) => user.email === e.email);
 
-        console.log("emailExists", emailExists);
+        // console.log("emailExists", emailExists);
         console.log("Incorrect credentials!");
       }
     } catch (error) {
@@ -62,7 +62,7 @@ const Login = () => {
     }
   }, []);
 
-  console.log("getValues(password)", getValues("password"));
+  // console.log("getValues(password)", getValues("password"));
 
   const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
@@ -97,7 +97,7 @@ const Login = () => {
                   <Input
                     onChange={(e) => {
                       onChange(e);
-                      setEmailState(e?.target?.value);
+                      // setEmailState(e?.target?.value);
 
                       const singleObject = lsData.find((i) => {
                         return i.email === e.target.value;
