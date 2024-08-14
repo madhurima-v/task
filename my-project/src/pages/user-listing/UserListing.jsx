@@ -262,32 +262,78 @@ const Userlisting = () => {
         </p>
       </div>
       <Drawer
-        title="User Details"
+        className="rounded h-screen"
         placement="right"
         onClose={() => setOpen(false)}
-        visible={open}
+        open={open}
+        closeIcon={null}
       >
-        <div className="flex flex-col">
-          <Avatar
-            src={getAvatarUrl(drawerIndex)}
-            size={100}
-            className="mb-4 self-center"
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-gray-400 font-semibold text-lg">User Details</p>
+          <MoreOutlined
+            className="text-gray-400 cursor-pointer hover:text-gray-600"
+            onClick={() => setOpen(false)}
           />
-          <p className="font-bold text-lg mb-2">
-            {drawerData.firstName} {drawerData.lastName}
-          </p>
-          <p className="text-sm text-gray-600 mb-4">{drawerData.email}</p>
-          <p className="text-sm text-gray-600 mb-2">
-            <strong>Phone:</strong> {drawerData.phone}
-          </p>
-          <p className="text-sm text-gray-600 mb-2">
-            <strong>Role:</strong> {drawerData.company?.title}
-          </p>
-          <p className="text-sm text-gray-600 mb-2">
-            <strong>Address:</strong>{" "}
-            {`${drawerData.address?.address}, ${drawerData.address?.city}, ${drawerData.address?.postalCode}`}
-          </p>
         </div>
+        {drawerData && (
+          <div>
+            <div className="flex items-center mb-4">
+              <Avatar
+                src={getAvatarUrl(drawerIndex)}
+                shape="circle"
+                size={100}
+                className="mr-4"
+              />
+              <div className="flex flex-col">
+                <p className="text-xl font-semibold mb-1">
+                  {`${drawerData?.firstName} ${drawerData?.lastName}`}
+                </p>
+                <p className="text-sm text-gray-500">
+                  Birthdate: {drawerData?.birthDate}
+                </p>
+              </div>
+            </div>
+            <hr className="my-4 border-gray-300" />
+
+            <div>
+              <div className="flex items-center mb-4">
+                <UserOutlined className="text-xl text-gray-500 mr-2" />
+                <h1 className="text-xl text-gray-500">Account Details</h1>
+              </div>
+              <p className="text-lg text-gray-500 font-semibold">
+                {`${drawerData?.firstName} ${drawerData?.lastName}`}
+              </p>
+              <p className="text-xs text-gray-300">FULL NAME</p>
+              <p className="text-lg text-gray-500 font-semibold">
+                {drawerData?.email}
+              </p>
+              <p className="text-xs text-gray-300">EMAIL</p>
+              <p className="text-lg text-gray-500 font-semibold">
+                {drawerData?.company?.title}
+              </p>
+              <p className="text-xs text-gray-300">COMPANY</p>
+            </div>
+
+            <hr className="my-4 border-gray-300" />
+
+            <div>
+              <div className="flex items-center mb-4">
+                <BarChartOutlined className="text-xl text-gray-500 mr-2" />
+                <h1 className="text-xl text-gray-500">User Data</h1>
+              </div>
+              <p className="text-lg text-gray-500 font-semibold">
+                {drawerData?.address?.address}
+              </p>
+              <p className="text-xs text-gray-300">ADDRESS</p>
+              <p className="text-lg text-gray-500 font-semibold">{`${drawerData?.address?.city} - ${drawerData?.address?.postalCode}`}</p>
+              <p className="text-xs text-gray-300">CITY</p>
+              <p className="text-lg text-gray-500 font-semibold">
+                {drawerData?.address?.country}
+              </p>
+              <p className="text-xs text-gray-300">COUNTRY</p>
+            </div>
+          </div>
+        )}
       </Drawer>
     </section>
   );

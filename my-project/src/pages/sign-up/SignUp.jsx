@@ -9,6 +9,7 @@ const Signup = () => {
     handleSubmit,
     formState: { errors },
   } = useForm({
+    mode: "onChange",
     defaultValues: {
       username: "",
       email: "",
@@ -69,26 +70,38 @@ const Signup = () => {
     }
   };
 
+  const usernamePattern = /^[a-zA-Z0-9_-]{3,10}$/;
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
   return (
     <>
-      <section className="h-screen w-full flex flex-col md:flex-row">
-        <div className="w-full md:w-1/2 h-[60vh] md:h-screen flex items-center justify-center">
-          <img
-            src="src/assets/image.jpg"
-            className="w-full h-full object-cover"
-            alt="brand-img"
-          />
-        </div>
-        <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-4 md:p-8 h-full">
+      <section className="md:!h-screen w-full flex">
+        <div className="w-full flex flex-col justify-center items-center p-4 md:p-8 h-full">
           <div className="w-[350px] md:w-[450px] h-[140px] md:h-[180px] mb-6">
             <img src="src/assets/ShipcomLogo.png" alt="brand-logo" />
+          </div>
+          <div className="content mt-[-42px]">
+            <h1 className="text-2xl text-center font-sans font-bold text-violet-950 mb-2">
+              Welcome
+            </h1>
+            <p className="text-center text-xs text-violet-950 mb-6">
+              Sign Up to Labs Monitoring System
+            </p>
           </div>
           <form className="flex flex-col justify-center items-center w-full max-w-[320px] space-y-7">
             <>
               <Controller
                 control={control}
                 name="username"
-                rules={{ required: "Username is required!" }}
+                rules={{
+                  required: "Username is required!",
+                  pattern: {
+                    value: usernamePattern,
+                    message:
+                      "Username must be 3-10 characters long and can include letters, numbers, underscores, and hyphens.",
+                  },
+                }}
                 render={({ field: { onChange, value } }) => (
                   <div className="relative w-full flex flex-col">
                     <Input
@@ -120,7 +133,13 @@ const Signup = () => {
               <Controller
                 control={control}
                 name="email"
-                rules={{ required: "Email ID is required!" }}
+                rules={{
+                  required: "Email ID is required!",
+                  pattern: {
+                    value: emailPattern,
+                    message: "Invalid email format.",
+                  },
+                }}
                 render={({ field: { onChange, value } }) => (
                   <div className="relative w-full flex flex-col">
                     <Input
@@ -152,7 +171,14 @@ const Signup = () => {
               <Controller
                 control={control}
                 name="password"
-                rules={{ required: "Password is required!" }}
+                rules={{
+                  required: "Password is required!",
+                  pattern: {
+                    value: passwordPattern,
+                    message:
+                      "Password must be at least 8 characters long, with one uppercase letter, one lowercase letter, and one digit.",
+                  },
+                }}
                 render={({ field: { onChange, value } }) => (
                   <div className="relative w-full flex flex-col">
                     <Input.Password
@@ -196,6 +222,17 @@ const Signup = () => {
             >
               Sign Up
             </Button>
+            <p className="text-sm text-violet-950">
+              Already user? Please{" "}
+              <span
+                className="text-blue-600 cursor-pointer text-sm"
+                onClick={() => {
+                  navigate("/Login");
+                }}
+              >
+                Log in
+              </span>
+            </p>
           </form>
         </div>
       </section>

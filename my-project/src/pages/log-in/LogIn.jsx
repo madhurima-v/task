@@ -13,9 +13,9 @@ const Login = () => {
     control,
     handleSubmit,
     formState: { errors },
-    watch,
     getValues,
   } = useForm({
+    mode: "onChange",
     defaultValues: {
       email: "",
       password: "",
@@ -62,21 +62,17 @@ const Login = () => {
   }, []);
 
   console.log("getValues(password)", getValues("password"));
+
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
   return (
     <>
-      <section className="h-screen w-full flex flex-col md:flex-row">
-        <div className="w-full md:w-1/2 h-[60vh] md:h-screen flex items-center justify-center">
-          <img
-            src="src/assets/image.jpg"
-            className="w-full h-full object-cover"
-            alt="brand-img"
-          />
-        </div>
-        <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-4 md:p-8 h-full">
-          <div className="w-[350px] md:w-[450px] h-[140px] md:h-[180px] mb-2">
+      <section className="md:!h-screen w-full flex">
+        <div className="w-full flex flex-col justify-center items-center p-4 md:p-8 h-full">
+          <div className="w-[350px] md:w-[450px] h-[140px] md:h-[180px] mb-6">
             <img src="src/assets/ShipcomLogo.png" alt="brand-logo" />
           </div>
-          <div className="content mt-[-22px]">
+          <div className="content mt-[-42px]">
             <h1 className="text-2xl text-center font-sans font-bold text-violet-950 mb-2">
               Welcome
             </h1>
@@ -84,11 +80,17 @@ const Login = () => {
               Login to Labs Monitoring System
             </p>
           </div>
-          <form className="flex flex-col justify-center items-center w-full max-w-[320px] space-y-10">
+          <form className="flex flex-col justify-center items-center w-full max-w-[320px] space-y-7">
             <Controller
               control={control}
               name="email"
-              rules={{ required: "Email ID is required!" }}
+              rules={{
+                required: "Email ID is required!",
+                pattern: {
+                  value: emailPattern,
+                  message: "Invalid email format.",
+                },
+              }}
               render={({ field: { onChange, value } }) => (
                 <div className="relative w-full flex flex-col">
                   <Input
@@ -177,6 +179,17 @@ const Login = () => {
             >
               Login
             </Button>
+            <p className="text-sm text-violet-950">
+              New user? Please{" "}
+              <span
+                className="text-blue-600 cursor-pointer text-sm"
+                onClick={() => {
+                  navigate("/");
+                }}
+              >
+                Sign Up
+              </span>
+            </p>
           </form>
         </div>
       </section>
