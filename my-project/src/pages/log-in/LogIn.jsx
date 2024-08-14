@@ -8,6 +8,7 @@ const Login = () => {
   const [passwordState, setPasswordState] = useState("");
   const [emailState, setEmailState] = useState("");
   const [targetObject, setTargetObject] = useState({});
+  const [submitClicked, setSubmitClicked] = useState(false);
   console.log("targetObject", targetObject);
   const {
     control,
@@ -138,6 +139,9 @@ const Login = () => {
                     onChange={(e) => {
                       onChange(e);
                       setPasswordState(e?.target?.value);
+                      if (e.target.value === "") {
+                        setSubmitClicked(false);
+                      }
                     }}
                     className={`w-full border-gray-400 transition-all ${
                       errors?.password?.message
@@ -160,21 +164,25 @@ const Login = () => {
                   )}
 
                   {passwordState !== "" &&
+                  submitClicked &&
                   targetObject.password !== passwordState ? (
                     <p className="text-red-600 text-sm mt-1 text-left">
-                      Password Incorrect!
+                      Incorrect Credential
                     </p>
                   ) : (
                     ""
                   )}
-
-                  {}
                 </div>
               )}
             />
 
             <Button
-              onClick={handleSubmit(onSubmit)}
+              onClick={() => {
+                if (getValues("password").length) {
+                  setSubmitClicked(true);
+                }
+                handleSubmit(onSubmit)();
+              }}
               className="bg-violet-600 hover:!bg-violet-500 hover:!text-white focus:!ring focus:!ring-violet-300 focus:!outline-none border-0 text-white w-full mt-8"
             >
               Login

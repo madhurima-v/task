@@ -104,7 +104,7 @@ const Userlisting = () => {
       dataIndex: "image",
       key: "image",
       render: (_, __, index) => (
-        <Avatar src={getAvatarUrl(index)} shape="circle" size={50} />
+        <Avatar src={getAvatarUrl(index)} shape="circle" size={70} />
       ),
     },
     {
@@ -137,7 +137,7 @@ const Userlisting = () => {
       key: "actions",
       render: () => (
         <Tooltip title="More details">
-          <MoreOutlined className="text-gray-500 cursor-pointer hover:text-gray-700" />
+          <MoreOutlined className="text-gray-500 cursor-pointer text-center justify-center items-center hover:text-gray-700" />
         </Tooltip>
       ),
     },
@@ -239,7 +239,7 @@ const Userlisting = () => {
         </div>
         <div className="overflow-x-auto">
           <Table
-            className="custom-table w-full"
+            className="w-full"
             columns={columns}
             dataSource={filteredData}
             onRow={(record, rowIndex) => ({
@@ -252,10 +252,13 @@ const Userlisting = () => {
             loading={loading}
             rowKey="id"
             pagination={false}
-            scroll={{ x: 800 }}
+            scroll={{
+              x: 800,
+              y: 500,
+            }}
           />
         </div>
-        <p className="text-xs text-gray-400 mt-6">
+        <p className="text-sm text-gray-400 mt-3 pb-2">
           Showing {(page - 1) * pageSize + 1}-
           {Math.min(page * pageSize, filteredData.length)} of{" "}
           {filteredData.length} Users
